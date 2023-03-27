@@ -60,6 +60,14 @@
 			path = Sources;
 			sourceTree = "<group>";
 		};
+		986DFFD629D1312A0073BAA9 /* Swift */ = {
+			isa = PBXGroup;
+			children = (
+				C7144C381A869C18009AEC5B /* NavigationNotice.swift */,
+			);
+			path = Swift;
+			sourceTree = "<group>";
+		};
 		C7144C121A869BE4009AEC5B = {
 			isa = PBXGroup;
 			children = (
@@ -81,8 +89,8 @@
 		C7144C1E1A869BE4009AEC5B /* NavigationNotice */ = {
 			isa = PBXGroup;
 			children = (
+				986DFFD629D1312A0073BAA9 /* Swift */,
 				C7144C211A869BE4009AEC5B /* NavigationNotice.h */,
-				C7144C381A869C18009AEC5B /* NavigationNotice.swift */,
 				C7144C1F1A869BE4009AEC5B /* Supporting Files */,
 			);
 			path = NavigationNotice;
