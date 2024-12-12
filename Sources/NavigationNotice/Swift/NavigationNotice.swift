@@ -275,19 +275,6 @@ open class NavigationNotice {
     }
 
     fileprivate class NoticeManager {
-        class HitWindow: UIWindow {
-            override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-                if let superWindow = super.hitTest(point, with: event) {
-                    if superWindow != self {
-                        return superWindow
-                    }
-                }
-                return nil
-            }
-        }
-        
-        fileprivate weak var mainWindow: UIWindow?
-        fileprivate var noticeWindow: HitWindow?
         fileprivate var contents: [NavigationNotice] = []
         fileprivate var showingNotice: NavigationNotice?
         fileprivate var onStatusBar: Bool = true
@@ -296,13 +283,11 @@ open class NavigationNotice {
         
         fileprivate func startNotice(_ notice: NavigationNotice) {
             showingNotice = notice
-            
-            noticeWindow?.rootViewController = notice.noticeViewController
-            noticeWindow?.windowLevel = UIWindow.Level.statusBar + (notice.onStatusBar ? 1 : -1)
-            
+
+            // NavigationNoticeを新たに生成したUIWindowに追加する形で表示すると、makeKeyAndVisibleのタイミングで画面がチラつくためtargetViewのWindowを使う
+            notice.noticeViewController.targerWindow?.addSubview(notice.noticeViewController.view)
+
             if let view = notice.noticeViewController.targetView {
-                mainWindow = view.window
-                
                 notice.noticeViewController.showOn(view)
             } else {
                 self.next()
@@ -312,18 +297,6 @@ open class NavigationNotice {
         fileprivate func endNotice() {
             showingNotice?.noticeViewController.setNeedsStatusBarAppearanceUpdate()
             showingNotice = nil
-            
-            mainWindow?.makeKeyAndVisible()
-            noticeWindow = nil
-        }
-        
-        fileprivate func generateWindow() -> HitWindow {
-            if #available(iOS 13.0, *),
-               let windowScene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
-                return HitWindow(windowScene: windowScene)
-            } else {
-                return HitWindow(frame: UIScreen.main.bounds)
-            }
         }
         
         func next() {
@@ -339,8 +312,6 @@ open class NavigationNotice {
             
             DispatchQueue.main.async {
                 if self.showingNotice == nil {
-                    self.noticeWindow = self.generateWindow()
-                    self.noticeWindow?.makeKeyAndVisible()
                     
                     self.next()
                 }
